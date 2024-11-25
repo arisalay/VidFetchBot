@@ -41,12 +41,18 @@ async def download_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"❌ حدث خطأ أثناء التنزيل: {e}")
 
 def main():
+    # تحديد المنفذ (افتراضي 18012، ويمكن تغييره بمتغير بيئة)
+    PORT = int(os.environ.get("PORT", 18012))
+
+    # إنشاء التطبيق
     app = ApplicationBuilder().token(TOKEN).build()
 
+    # إضافة Handlers
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, download_video))
 
-    app.run_polling()
+    # تشغيل البوت مع تحديد المنفذ
+    app.run_polling(port=PORT)
 
 if __name__ == '__main__':
     main()
