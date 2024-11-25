@@ -3,16 +3,22 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 from yt_dlp import YoutubeDL
 
-# أدخل التوكن الخاص ببوتك هنا
-TOKEN = "7608094678:AAG6Ct3k29-Sbz9fvCvLz90RJ6eT1B6U8n0"
+# ضع هنا التوكن الخاص ببوتك
+TOKEN = "YOUR_BOT_TOKEN"
+
+# إذا كنت تستخدم Webhook (للاستضافة)، أدخل رابط الـ Webhook هنا
+WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")  # ضع الرابط الخاص بـ Render أو أي استضافة
+PORT = int(os.environ.get("PORT", 8443))  # المنفذ الافتراضي أو المنفذ المخصص
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """تعريف الأمر /start"""
     await update.message.reply_text(
         "مرحبًا بك في VidFetchNow! 🚀\n"
         "أرسل لي رابط فيديو، وسأقوم بتنزيله لك."
     )
 
 async def download_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """تنزيل الفيديو من الرابط"""
     url = update.message.text
 
     if not url.startswith("http"):
@@ -21,7 +27,6 @@ async def download_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text("🔄 جاري تنزيل الفيديو، الرجاء الانتظار...")
 
-    # إعدادات yt-dlp لتحميل الفيديو
     ydl_opts = {
         'outtmpl': 'downloaded_video.mp4',  # اسم الفيديو بعد التنزيل
         'format': 'mp4',  # صيغة الفيديو
@@ -31,7 +36,6 @@ async def download_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
         with YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
-        # إرسال الفيديو بعد التنزيل
         with open("downloaded_video.mp4", "rb") as video:
             await update.message.reply_video(video)
 
@@ -41,18 +45,25 @@ async def download_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"❌ حدث خطأ أثناء التنزيل: {e}")
 
 def main():
-    # تحديد المنفذ (افتراضي 18012، ويمكن تغييره بمتغير بيئة)
-    PORT = int(os.environ.get("PORT", 18012))
-
-    # إنشاء التطبيق
+    """الإعدادات وتشغيل البوت"""
     app = ApplicationBuilder().token(TOKEN).build()
 
-    # إضافة Handlers
+    # إضافة الأوامر والمعالجات
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, download_video))
 
-    # تشغيل البوت مع تحديد المنفذ
-    app.run_polling(port=PORT)
+    # تشغيل البوت باستخدام Polling (للتشغيل المحلي)
+    if not WEBHOOK_URL:
+        print("🚀 تشغيل البوت باستخدام polling...")
+        app.run_polling()
+    else:
+        # تشغيل البوت باستخدام Webhook (للاستضافة)
+        print("🚀 تشغيل البوت باستخدام webhook...")
+        app.run_webhook(
+            listen="0.0.0.0",
+            port=PORT,
+            webhook_url=WEBHOOK_URL,
+        )
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
