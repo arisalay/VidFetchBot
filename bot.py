@@ -4,7 +4,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, Con
 from yt_dlp import YoutubeDL
 
 # ضع هنا التوكن الخاص ببوتك
-TOKEN = "YOUR_BOT_TOKEN"
+TOKEN = "7608094678:AAG6Ct3k29-Sbz9fvCvLz90RJ6eT1B6U8n0"
 
 # إذا كنت تستخدم Webhook (للاستضافة)، أدخل رابط الـ Webhook هنا
 WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")  # ضع الرابط الخاص بـ Render أو أي استضافة
