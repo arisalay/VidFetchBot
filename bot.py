@@ -4,7 +4,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, Con
 from yt_dlp import YoutubeDL
 
 TOKEN = "7608094678:AAG6Ct3k29-Sbz9fvCvLz90RJ6eT1B6U8n0"
-WEBHOOK_URL = "https://your-deployed-url"
+WEBHOOK_URL = "https://vidfetchbot.onrender.com"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
